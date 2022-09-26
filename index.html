@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<title>Circle Wave</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+	body {
+		margin: 0;
+		display: grid;
+		place-items: center;
+	}
+	svg {
+		width: 100vmin;
+		height: 100vmin;
+	}
+</style>
+<svg viewbox="-1.5 -1.5 3 3">
+	<style>
+		path {
+			stroke-linejoin: round;
+			fill: none;
+			stroke-width: 0.05px;
+			mix-blend-mode: darken;
+			isolation: isolate;
+		}
+		use[stroke=magenta] {
+			rotate: 15deg
+		}
+		use[stroke=yellow] {
+			rotate: 30deg
+		}
+	</style>
+	<defs>
+		<path id="radialLine"></path>
+	</defs>
+	<g>
+		<use href="#radialLine" stroke="cyan"/>
+		<use href="#radialLine" stroke="magenta"/>
+		<use href="#radialLine" stroke="yellow"/>
+	</g>
+	<script>
+		const line = document.querySelector('path[id=radialLine]')
+		requestAnimationFrame(update)
+		function update(timestamp) {
+			line.setAttribute('d', drawRadialLine(timestamp, 120))
+			requestAnimationFrame(update)
+		}
+		function f (x, t) {
+			return Math.sin(8 * x - t / 2000) * Math.sin(0.5 * x + t / 2000) ** 4 / 8
+		}
+		function drawRadialLine(timestamp, resolution) {
+			const lineCommands = Array.from({ length: resolution + 1 }, (_, i) => {
+				const angle = i * 2 * Math.PI / resolution
+				const amplitude = 1 + f(angle, timestamp)
+				const x = amplitude * Math.sin(angle)
+				const y = amplitude * Math.cos(angle)
+				return "L " + x + " " + y
+			})
+			return "M" + lineCommands.join('\n').slice(1) + " Z"
+		}
+	</script>
+</svg>
